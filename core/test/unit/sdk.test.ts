@@ -1,5 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach, Mock } from "vitest";
-import { Screen, Project, Stitch } from "../../src/sdk.js";
+import { Screen } from "../../src/screen.js";
+import { Project } from "../../src/project.js";
+import { Stitch } from "../../src/sdk.js";
 import { StitchMCPClient } from "../../src/client.js";
 import { ScreenInstance } from "../../src/types.js";
 
