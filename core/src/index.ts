@@ -4,4 +4,7 @@ export * from "./screen.js";
 export * from "./project.js";
 export * from "./sdk.js";
 export * from "./singleton.js";
-export * from "./proxy.js";
+export * from "./proxy/index.js";
+export * from "./result.js";
+export * from "./spec/errors.js";
+export * from "./methods/index.js";

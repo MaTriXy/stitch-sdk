@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { StitchProxy } from '../src/proxy.js';
+import { StitchProxy } from '../src/proxy/index.js';
 import { Transport } from "@modelcontextprotocol/sdk/shared/transport.js";
 
 // Mock fetch

@@ -1,7 +1,6 @@
-import { describe, it, expect, vi, beforeEach, afterEach, Mock } from "vitest";
+import { describe, it, expect, vi, beforeEach, Mock } from "vitest";
 import { Screen } from "../../src/screen.js";
 import { Project } from "../../src/project.js";
-import { Stitch } from "../../src/sdk.js";
 import { StitchMCPClient } from "../../src/client.js";
 import { ScreenInstance } from "../../src/types.js";
 
@@ -30,13 +29,16 @@ describe("SDK Unit Tests", () => {
         htmlCode: "<div>Hello World</div>"
       });
 
-      const html = await screen.getHtml();
+      const result = await screen.getHtml();
 
       expect(mockClient.callTool).toHaveBeenCalledWith("get_screen_html", {
         projectId: projectId,
         screenId: screenData.id
       });
-      expect(html).toBe("<div>Hello World</div>");
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data).toBe("<div>Hello World</div>");
+      }
     });
 
     it("getHtml should fetch content if URL is provided", async () => {
@@ -56,14 +58,17 @@ describe("SDK Unit Tests", () => {
       } as any);
 
       try {
-        const html = await screen.getHtml();
+        const result = await screen.getHtml();
 
         expect(mockClient.callTool).toHaveBeenCalledWith("get_screen_html", {
           projectId: projectId,
           screenId: screenData.id
         });
         expect(globalThis.fetch).toHaveBeenCalledWith(fakeUrl);
-        expect(html).toBe(fakeContent);
+        expect(result.success).toBe(true);
+        if (result.success) {
+          expect(result.data).toBe(fakeContent);
+        }
       } finally {
         globalThis.fetch = originalFetch;
       }
@@ -84,7 +89,10 @@ describe("SDK Unit Tests", () => {
         projectId: projectId,
         screenId: screenData.id
       });
-      expect(result).toBe(imageUrl);
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data).toBe(imageUrl);
+      }
     });
   });
 
@@ -98,7 +106,7 @@ describe("SDK Unit Tests", () => {
 
       (mockClient.callTool as Mock).mockResolvedValue(mockResponse);
 
-      const screen = await project.generate(prompt);
+      const result = await project.generate(prompt);
 
       expect(mockClient.callTool).toHaveBeenCalledWith("generate_screen_from_text", {
         projectId: projectId,
@@ -106,9 +114,12 @@ describe("SDK Unit Tests", () => {
         deviceType: "DESKTOP"
       });
 
-      expect(screen).toBeInstanceOf(Screen);
-      expect(screen.id).toBe(mockResponse.id);
-      expect(screen.projectId).toBe(projectId);
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data).toBeInstanceOf(Screen);
+        expect(result.data.id).toBe(mockResponse.id);
+        expect(result.data.projectId).toBe(projectId);
+      }
     });
 
     it("screens should list screens and return Screen instances", async () => {
@@ -122,16 +133,19 @@ describe("SDK Unit Tests", () => {
 
       (mockClient.callTool as Mock).mockResolvedValue(mockResponse);
 
-      const screens = await project.screens();
+      const result = await project.screens();
 
       expect(mockClient.callTool).toHaveBeenCalledWith("list_screens", {
         projectId: projectId
       });
 
-      expect(screens).toHaveLength(2);
-      expect(screens[0]).toBeInstanceOf(Screen);
-      expect(screens[1]).toBeInstanceOf(Screen);
-      expect(screens[0].id).toBe("s1");
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data).toHaveLength(2);
+        expect(result.data[0]).toBeInstanceOf(Screen);
+        expect(result.data[1]).toBeInstanceOf(Screen);
+        expect(result.data[0].id).toBe("s1");
+      }
     });
   });
 });

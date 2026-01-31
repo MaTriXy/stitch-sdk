@@ -9,21 +9,28 @@ runIfConfigured("Stitch Live Integration", () => {
 
   beforeAll(async () => {
     stitch = new Stitch();
-    await stitch.connect();
+    const connectResult = await stitch.connect();
+    expect(connectResult.success).toBe(true);
   });
 
   it("should list projects", async () => {
-    const projects = await stitch.projects();
-    expect(Array.isArray(projects)).toBe(true);
-    if (projects.length > 0) {
-      expect(projects[0]).toHaveProperty("name");
+    const result = await stitch.projects();
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(Array.isArray(result.data)).toBe(true);
+      if (result.data.length > 0) {
+        expect(result.data[0]).toHaveProperty("id");
+      }
     }
   });
 
   it("should create and retrieve a project", async () => {
-    const project = await stitch.createProject(`Test Project ${Date.now()}`);
-    expect(project.id).toContain("projects/");
-    testProjectId = project.id;
-    console.log("Created Project:", testProjectId);
+    const result = await stitch.createProject(`Test Project ${Date.now()}`);
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.id).toContain("projects/");
+      testProjectId = result.data.id;
+      console.log("Created Project:", testProjectId);
+    }
   }, 30000);
 });
