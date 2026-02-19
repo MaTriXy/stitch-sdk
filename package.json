@@ -19,7 +19,6 @@
     "smoke:test": "bun scripts/smoke-test.ts"
   },
   "devDependencies": {
-    "@google/jules-sdk": "^0.0.2",
     "@types/react": "^18.3.0",
     "firebase-tools": "^14.26.0",
     "ink": "^4.0.0",

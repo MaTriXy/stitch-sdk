@@ -7,4 +7,3 @@ export * from "./singleton.js";
 export * from "./proxy/index.js";
 export * from "./result.js";
 export * from "./spec/errors.js";
-export * from "./methods/index.js";
