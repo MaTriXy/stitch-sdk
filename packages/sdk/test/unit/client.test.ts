@@ -231,4 +231,35 @@ describe("StitchToolClient", () => {
       expect(result).toBe("plain string");
     });
   });
+
+  // ─── Cycle 4: connect() race condition ──────────────────────────
+  describe("connect race condition", () => {
+    it("should only connect once when multiple callTool run concurrently", async () => {
+      const client = new StitchToolClient({ apiKey: "k" });
+      let connectCount = 0;
+
+      // Mock connect to track how many times it's actually called
+      const originalConnect = client["client"].connect.bind(client["client"]);
+      client["client"].connect = vi.fn(async (transport) => {
+        connectCount++;
+        // Simulate async delay to widen the race window
+        await new Promise((resolve) => setTimeout(resolve, 10));
+        return originalConnect(transport);
+      });
+
+      // Mock callTool to avoid real network
+      client["client"].callTool = vi.fn().mockResolvedValue({
+        isError: false,
+        content: [{ type: "text", text: '{"ok":true}' }],
+      });
+
+      // Fire two concurrent callTool — both see isConnected=false
+      await Promise.allSettled([
+        client.callTool("tool_a", {}),
+        client.callTool("tool_b", {}),
+      ]);
+
+      expect(connectCount).toBe(1);
+    });
+  });
 });

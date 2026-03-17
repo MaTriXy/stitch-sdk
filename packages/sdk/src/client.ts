@@ -41,6 +41,7 @@ export class StitchToolClient implements StitchToolClientSpec {
   private transport: StreamableHTTPClientTransport | null = null;
   private config: StitchConfig;
   private isConnected: boolean = false;
+  private connectPromise: Promise<void> | null = null;
 
   constructor(inputConfig?: Partial<StitchConfig>) {
     const rawConfig = {
@@ -136,7 +137,17 @@ export class StitchToolClient implements StitchToolClientSpec {
 
   async connect() {
     if (this.isConnected) return;
+    if (this.connectPromise) return this.connectPromise;
 
+    this.connectPromise = this.doConnect();
+    try {
+      await this.connectPromise;
+    } finally {
+      this.connectPromise = null;
+    }
+  }
+
+  private async doConnect() {
     // Create transport with auth headers injected per-instance (no global fetch mutation)
     this.transport = new StreamableHTTPClientTransport(
       new URL(this.config.baseUrl),
