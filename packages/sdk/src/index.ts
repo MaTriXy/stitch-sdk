@@ -41,6 +41,7 @@ export { toolMap, type ToolParam, type ToolInfo } from "./tool-map.js";
 
 // Types (config + data interfaces)
 export type { StitchConfig, StitchConfigInput } from "./spec/client.js";
+export { StitchProxyConfigSchema } from "./spec/proxy.js";
 export type {
   ProjectData,
   GenerateScreenParams,
